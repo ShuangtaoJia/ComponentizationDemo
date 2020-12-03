@@ -1,0 +1,71 @@
+ext {
+    include_with_api = { moduleName ->
+        include(moduleName)
+        //获得module的根目录
+        String originDir = project(moduleName).projectDir
+        //制作的 SDK module的目录
+        String targetDir = "${originDir}_api"
+        //制作的 SDK module的名字
+        String sdkName = "${project(moduleName).name}_api"
+        System.out.println("-------------------------------------SDK name:" + sdkName)
+        //删除掉 SDK module目录 里所有的文件 除了 iml
+        // （这里之所以做删除，是因为有可能之前已经生成过该SDK module，所以在再次生成的时候先把之前生成的module里的文件删掉）
+        FileTree targetFiles = fileTree(targetDir)
+        targetFiles.exclude "*.iml"
+        targetFiles.each { File file ->
+            file.delete()
+        }
+        //从生成SDK的源module拷贝 _api 文件到 SDK module
+        copy {
+            from originDir
+            into targetDir
+            //拷贝文件
+            include '**/*_api'
+        }
+
+        // 将 _api 文件的 "_api" 去掉
+        FileTree files = fileTree(targetDir).include("**/*_api")
+        files.each {
+            File file ->
+                file.renameTo(new File(file.absolutePath.substring(0,file.absolutePath.lastIndexOf("_api"))))
+        }
+        //加入 SDK module
+        include "$sdkName"
+    }
+}
+
+
+
+//def include_with_api(String moduleName) {
+//    include(moduleName)
+//    //获得module的根目录
+//    String originDir = project(moduleName).projectDir
+//    //制作的 SDK module的目录
+//    String targetDir = "${originDir}_api"
+//    //制作的 SDK module的名字
+//    String sdkName = "${project(moduleName).name}_api"
+//    System.out.println("-------------------------------------SDK name:" + sdkName)
+//    //删除掉 SDK module目录 里所有的文件 除了 iml
+//    // （这里之所以做删除，是因为有可能之前已经生成过该SDK module，所以在再次生成的时候先把之前生成的module里的文件删掉）
+//    FileTree targetFiles = fileTree(targetDir)
+//    targetFiles.exclude "*.iml"
+//    targetFiles.each { File file ->
+//        file.delete()
+//    }
+//    //从生成SDK的源module拷贝 _api 文件到 SDK module
+//    copy {
+//        from originDir
+//        into targetDir
+//        //拷贝文件
+//        include '**/*_api'
+//    }
+//
+//    // 将 _api 文件的 "_api" 去掉
+//    FileTree files = fileTree(targetDir).include("**/*_api")
+//    files.each {
+//        File file ->
+//            file.renameTo(new File(file.absolutePath.substring(0,file.absolutePath.lastIndexOf("_api"))))
+//    }
+//    //加入 SDK module
+//    include "$sdkName"
+//}

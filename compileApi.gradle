@@ -1,0 +1,9 @@
+ext {
+    compileApi = { moduleName ->
+
+        println "######  compileApi  moduleName ${moduleName}_api ######"
+        dependencies {
+            api project("${moduleName}_api")
+        }
+    }
+}

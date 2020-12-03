@@ -1,0 +1,14 @@
+apply from: './include_with_api.gradle'
+
+include ':ComponentB'
+include ':app'
+rootProject.name = "ComponentizationDemo"
+
+//对于需要生成api的module,使用该方法来进行include
+include_with_api(':ComponentA')
+
+
+
+
+
+
